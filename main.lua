@@ -4,6 +4,7 @@ WINDOW_WIDTH  = 800
 GAME_TITLE = "PongClone"
 P1_LABEL = "Player 1:\n"
 P2_LABEL = "Player 2:\n"
+winning_player = ""
 
 -- general variables
 BAR_LENGTH = 50         -- 'width' of the rectangle that represents a players bar
@@ -42,6 +43,18 @@ end
 -- called on each game-loop iteration passing deltatime
 function love.update(dt)
 
+    -- player 1 has won
+    if p1_score >= VICTORY_THRESHOLD then
+        victory("Player 1")
+    end
+
+    -- player 2 has won
+    if p2_score >= VICTORY_THRESHOLD then
+        victory("Player 2")
+    end
+
+    -- player 2 has won
+
     if game_state == "playing" then
         if ball_x <= 0 then
             p2_score = p2_score + 1
@@ -73,6 +86,12 @@ function love.draw()
 
     end
 
+    -- display victory message if a victory has been achieved
+    if game_state == "victory" then 
+        love.graphics.printf(winning_player .. " has won!", 0, WINDOW_HEIGHT/2 - 100, WINDOW_WIDTH, 'center')
+        love.graphics.printf("Press <SPACE> to start a new game.", 0, WINDOW_HEIGHT/2 - 80, WINDOW_WIDTH, 'center')
+    end
+
     -- game title & labels
     love.graphics.printf(GAME_TITLE, 0, 10, WINDOW_WIDTH, 'center')
     love.graphics.printf(P1_LABEL..p1_score, 0, 10, WINDOW_WIDTH, 'left', 0, 1, 1, -20)
@@ -90,7 +109,8 @@ end
 
 -- handle keypresses in menus
 function love.keypressed(key)
-    if game_state == "titlescreen" and key == "space" then
+    if (game_state == "titlescreen" or game_state == "victory") and key == "space" then
+        initGame()
         spawnBall()
         game_state = "playing"
     end
@@ -175,4 +195,12 @@ function initGame()
     p2_score = 0
     p2_bar_x = WINDOW_WIDTH - BAR_THICKNESS - 10
     p2_bar_y = WINDOW_HEIGHT/2 - BAR_LENGTH/2
+end
+
+-- handles the display if a player has won the game
+function victory(player)
+    ball_dx = 0
+    ball_dy = 0
+    winning_player = player
+    game_state = "victory"
 end
