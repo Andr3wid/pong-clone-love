@@ -73,19 +73,19 @@ end
 -- handle keyboard input
 function detectBarMovement(dt)
     if love.keyboard.isDown('w') then
-        p1_bar_y = p1_bar_y - BAR_MOVE_SPEED*dt
+        p1_bar_y = math.max(0, p1_bar_y - BAR_MOVE_SPEED*dt)
     end
 
     if love.keyboard.isDown('s') then
-        p1_bar_y = p1_bar_y + BAR_MOVE_SPEED*dt
+        p1_bar_y = math.min(WINDOW_HEIGHT - BAR_LENGTH, p1_bar_y + BAR_MOVE_SPEED*dt)
     end
 
     if love.keyboard.isDown('i') then
-        p2_bar_y = p2_bar_y - BAR_MOVE_SPEED*dt
-    end
+        p2_bar_y = math.max(0, p2_bar_y - BAR_MOVE_SPEED*dt)
+    end 
 
     if love.keyboard.isDown('k') then
-        p2_bar_y = p2_bar_y + BAR_MOVE_SPEED*dt
+        p2_bar_y = math.min(WINDOW_HEIGHT - BAR_LENGTH, p2_bar_y + BAR_MOVE_SPEED*dt)
     end
 
     if love.keyboard.isDown('escape') then
