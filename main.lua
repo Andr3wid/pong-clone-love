@@ -23,6 +23,7 @@ p2_bar_y = WINDOW_HEIGHT/2 - BAR_LENGTH/2
 -- variable definitions for the ball
 BALL_HEIGHT = 10
 BALL_WIDTH  = 10
+BALL_SPEEDUP = 1.1 -- 10% speedup on each collision with a bar
 ball_x = WINDOW_WIDTH/2 - BALL_WIDTH/2
 ball_y = WINDOW_HEIGHT/2 - BALL_HEIGHT/2
 ball_dx = 0
@@ -51,6 +52,8 @@ function love.update(dt)
     ball_y = ball_y + ball_dy*dt
 
     detectBarMovement(dt)
+    handleBarCollision()
+    handleScreenEdgeCollision()
 end
 
 -- called on each game-loop iteration after love.update to render graphics
@@ -102,4 +105,38 @@ function spawnBall()
     -- initialize the dx / dy variables which determine the direction of the ball
     ball_dx = math.random(2) == 1 and 120 or -120
     ball_dy = math.random(-70, 70)
+end
+
+-- handle collision with the player-bars
+-- idea: check if one corner of the "ball"-rectangle lies within the area of a bar-rectangle
+function handleBarCollision()
+    
+    -- player 1 bar collision
+    if  ball_x <= p1_bar_x + BAR_THICKNESS
+        and ball_y >= p1_bar_y
+        and ball_y <= p1_bar_y + BAR_LENGTH then
+
+            ball_dx = -ball_dx * BALL_SPEEDUP -- change direction and speed the ball up
+            ball_dy = ball_dy
+
+            ball_x = p1_bar_x + BAR_THICKNESS + 1 -- always make sure to not get stuck in "endless collisions"
+    end
+
+    if  ball_x >= p2_bar_x - BAR_THICKNESS
+        and ball_y >= p2_bar_y
+        and ball_y <= p2_bar_y + BAR_LENGTH then
+
+            ball_dx = -ball_dx * BALL_SPEEDUP -- change direction and speed the ball up
+            ball_dy = ball_dy
+
+            ball_x = p2_bar_x - BAR_THICKNESS - 1 -- always make sure to not get stuck in "endless collisions"
+    end
+
+end
+
+-- check and handle collision between the ball and the screen-edge (top / bottom)
+function handleScreenEdgeCollision()
+    if ball_y <= 0 or ball_y + BALL_HEIGHT >= WINDOW_HEIGHT then
+        ball_dy = -ball_dy
+    end
 end
